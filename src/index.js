@@ -802,7 +802,7 @@ function getSchema(sequelize) {
           });
         }
 
-        const connection = sequelizeConnection({
+        const toSequelizeConnection = {
           name: connectionName,
           nodeType: targetType,
           target: association,
@@ -817,7 +817,12 @@ function getSchema(sequelize) {
             }
           },
           edgeFields
-        });
+        };
+        if (association.orderByEnum) {
+          toSequelizeConnection.orderBy = 
+            association.orderByEnum(connectionName);
+        }
+        const connection = sequelizeConnection(toSequelizeConnection);
         ModelTypes[connectionName] = connection;
         _.set(associationsToModel, `${targetType.name}.${Model.name}_${akey}`, {
           from: Model.name,
